@@ -33,8 +33,10 @@ import java.util.List;
 /**
  * Created by Ice on 4/5/2015.
  */
-public class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment
+{
 
+    public ArrayAdapter<String> myForecastAdapter;
     public ForecastFragment() {
     }
 
@@ -88,7 +90,7 @@ public class ForecastFragment extends Fragment {
 
         //array adapter begins
         List<String> weekForecast = new ArrayList<String>(Arrays.asList(weather));
-        ArrayAdapter<String> myForecastAdapter=new ArrayAdapter<String>(getActivity(),R.layout.list_item_forecast,R.id.list_item_forecast_textview,weather);
+        myForecastAdapter=new ArrayAdapter<String>(getActivity(),R.layout.list_item_forecast,R.id.list_item_forecast_textview,weekForecast);
 
         //array adapter ends
 
@@ -317,6 +319,18 @@ public class ForecastFragment extends Fragment {
             return null;
         }
 
+        @Override
+        protected void onPostExecute(String[] result)
+        {
+            if(result!=null)
+            {
+                myForecastAdapter.clear();
+                for(String forecastDay:result)
+                {
+                    myForecastAdapter.add(forecastDay);
+                }
+            }
+        }
 
     ///////networking code snippet ends
 
