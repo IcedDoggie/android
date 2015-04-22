@@ -1,8 +1,11 @@
 package com.icey.weather_list;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -12,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -59,8 +63,9 @@ public class ForecastFragment extends Fragment
         int id=item.getItemId();
         if(id == R.id.action_refresh)
         {
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("94043");
+            updateWeather();
+
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -76,12 +81,7 @@ public class ForecastFragment extends Fragment
         //fake data begins
         String weather[] =
         {
-                "Today-Sunny-88/63\n",
-                "Tomorrow-Foggy-70/46\n",
-                "Weds-Cloudy-72/63\n",
-                "Thurs-Rainy-64/51\n",
-                "Fri-Foggy-70/46\n",
-                "Sat-Sunny-76/68\n"
+
         };
 
         //fake data ends
@@ -92,6 +92,7 @@ public class ForecastFragment extends Fragment
         List<String> weekForecast = new ArrayList<String>(Arrays.asList(weather));
         myForecastAdapter=new ArrayAdapter<String>(getActivity(),R.layout.list_item_forecast,R.id.list_item_forecast_textview,weekForecast);
 
+        myForecastAdapter.notifyDataSetChanged();
         //array adapter ends
 
         //Find listview begins
@@ -102,11 +103,36 @@ public class ForecastFragment extends Fragment
 
         //Find listview ends
 
+        //Doing Toast
+        myListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+        @Override
+        public void onItemClick(AdapterView <?> adapterView,View view,int position,long l) {
+            String forecast = myForecastAdapter.getItem(position);
+            Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra(Intent.EXTRA_TEXT, forecast);
+            startActivity(intent);
+        }
+        });
+
+
+
+        //Toasted
+
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
 
         return rootView;
+    }
+    private void updateWeather()
+    {
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        weatherTask.execute("94043");
+
+        ///allow user to choose location based on postal code
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location= prefs.getString(getString(R.string.pref_location_key),getString(R.string.pref_location_default));
+        weatherTask.execute(location);
     }
 
     /* The date/time conversion code is going to be moved outside the asynctask later,
@@ -327,7 +353,7 @@ public class ForecastFragment extends Fragment
                 myForecastAdapter.clear();
                 for(String forecastDay:result)
                 {
-                    myForecastAdapter.add(forecastDay);
+                    myForecastAdapter.addAll(forecastDay);
                 }
             }
         }
