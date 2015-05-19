@@ -180,6 +180,8 @@ public class TestDb extends AndroidTestCase {
         WeatherDbHelper dbHelper = new WeatherDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
+        // Second Step: Create ContentValues of what you want to insert
+        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
         
     }
 
