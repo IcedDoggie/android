@@ -209,6 +209,14 @@ public class TestDb extends AndroidTestCase {
 
         // Fifth Step: Validate data in resulting Cursor with the original ContentValues
         TestUtilities.validateCurrentRecord("Error: Location Query Validation Failed",cursor, testValues);
+
+        // Finally, close the cursor and database
+        // Move the cursor to demonstrate that there is only one record in the database
+        assertFalse( "Error: More than one record returned from location query",cursor.moveToNext() );
+
+        //sixth step: close db and cursor
+        cursor.close();
+        db.close();
     }
 
     /*
