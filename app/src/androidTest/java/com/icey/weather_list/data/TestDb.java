@@ -207,6 +207,8 @@ public class TestDb extends AndroidTestCase {
         // from the query
         assertTrue( "Error: No Records returned from location query", cursor.moveToFirst() );
 
+        // Fifth Step: Validate data in resulting Cursor with the original ContentValues
+        TestUtilities.validateCurrentRecord("Error: Location Query Validation Failed",cursor, testValues);
     }
 
     /*
