@@ -191,6 +191,22 @@ public class TestDb extends AndroidTestCase {
         assertTrue(locationRowId != -1);
         // Data's inserted.  IN THEORY.  Now pull some out to stare at it and verify it made
         // the round trip.
+
+        // Fourth Step: Query the database and receive a Cursor back
+        // A cursor is your primary interface to the query results.
+        Cursor cursor = db.query(
+            WeatherContract.LocationEntry.TABLE_NAME,  // Table to Query
+            null, // all columns
+            null, // Columns for the "where" clause
+            null, // Values for the "where" clause
+            null, // columns to group by
+            null, // columns to filter by row groups
+            null // sort order
+            );
+        // Move the cursor to a valid database row and check to see if we got any records back
+        // from the query
+        assertTrue( "Error: No Records returned from location query", cursor.moveToFirst() );
+
     }
 
     /*
