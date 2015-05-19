@@ -20,8 +20,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 
-import com.icey.android.weather_list.app.data.WeatherContract.LocationEntry;
-import com.icey.android.weather_list.app.data.WeatherContract.WeatherEntry;
+import com.icey.weather_list.data.WeatherContract.LocationEntry;
+import com.icey.weather_list.data.WeatherContract.WeatherEntry;
 
 /**
  * Manages a local database for weather data.
@@ -39,6 +39,16 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+                // Create a table to hold locations.  A location consists of the string supplied in the
+                       // location setting, the city name, and the latitude and longitude
+                               final String SQL_CREATE_LOCATION_TABLE = "CREATE TABLE " + LocationEntry.TABLE_NAME + " (" +
+                                LocationEntry._ID + " INTEGER PRIMARY KEY," +
+                                LocationEntry.COLUMN_LOCATION_SETTING + " TEXT UNIQUE NOT NULL, " +
+                                LocationEntry.COLUMN_CITY_NAME + " TEXT NOT NULL, " +
+                                LocationEntry.COLUMN_COORD_LAT + " REAL NOT NULL, " +
+                                LocationEntry.COLUMN_COORD_LONG + " REAL NOT NULL " +
+                               " );";
+
         final String SQL_CREATE_WEATHER_TABLE = "CREATE TABLE " + WeatherEntry.TABLE_NAME + " (" +
                 // Why AutoIncrement here, and not above?
                 // Unique keys will be auto-generated in either case.  But for weather
