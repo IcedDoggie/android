@@ -182,7 +182,15 @@ public class TestDb extends AndroidTestCase {
 
         // Second Step: Create ContentValues of what you want to insert
         ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
-        
+
+        // Third Step: Insert ContentValues into database and get a row ID back
+
+        long locationRowId;
+        locationRowId = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, testValues);
+        // Verify we got a row back.
+        assertTrue(locationRowId != -1);
+        // Data's inserted.  IN THEORY.  Now pull some out to stare at it and verify it made
+        // the round trip.
     }
 
     /*
