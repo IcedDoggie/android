@@ -25,7 +25,7 @@ import android.text.format.Time;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
-import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
+import com.icey.weather_list.data.WeatherContract.WeatherEntry;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -96,15 +96,15 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         return highLowStr;
     }
 
-    /**
-     * Helper method to handle insertion of a new location in the weather database.
-     *
-     * @param locationSetting The location string used to request updates from the server.
-     * @param cityName A human-readable city name, e.g "Mountain View"
-     * @param lat the latitude of the city
-     * @param lon the longitude of the city
-     * @return the row ID of the added location.
-     */
+//    /**
+//     * Helper method to handle insertion of a new location in the weather database.
+//     *
+//     * @param locationSetting The location string used to request updates from the server.
+//     * @param cityName A human-readable city name, e.g "Mountain View"
+//     * @param lat the latitude of the city
+//     * @param lon the longitude of the city
+//     * @return the row ID of the added location.
+//     */
     long addLocation(String locationSetting, String cityName, double lat, double lon) {
         // Students: First, check if the location with this city name exists in the db
         // If it exists, return the current ID
