@@ -35,6 +35,9 @@
 
 
             </activity>
+        <provider
+            android:authorities="com.icey.weather_list"
+            android:name=".data.WeatherProvider" />
 
     </application>
 
