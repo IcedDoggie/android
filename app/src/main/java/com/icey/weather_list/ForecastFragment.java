@@ -93,8 +93,8 @@ public class ForecastFragment extends Fragment
     }
     private void updateWeather()
     {
-       
-        FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity(), myForecastAdapter);
+
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
         ///allow user to choose location based on postal code
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String location= prefs.getString(getString(R.string.pref_location_key),getString(R.string.pref_location_default));
