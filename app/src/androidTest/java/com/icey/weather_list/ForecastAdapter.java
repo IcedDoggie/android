@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.icey.weather_list.R;
 import com.icey.weather_list.data.WeatherContract;
 
 /**
