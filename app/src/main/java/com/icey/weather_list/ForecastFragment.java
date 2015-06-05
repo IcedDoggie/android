@@ -1,13 +1,13 @@
 package com.icey.weather_list;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.icey.weather_list.data.WeatherContract;
@@ -35,9 +34,9 @@ import java.text.SimpleDateFormat;
 /**
  * Created by Ice on 4/5/2015.
  */
-public class ForecastFragment extends Fragment
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
-
+    private static final int FORECAST_LOADER = 0;
     private ForecastAdapter mForecastAdapter;
     public ForecastFragment() {
     }
@@ -73,29 +72,16 @@ public class ForecastFragment extends Fragment
                              Bundle savedInstanceState)
     {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        String locationSetting = Utility.getPreferredLocation(getActivity());
-        //array adapter begins
-        // Sort order:  Ascending, by date.
-        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
-        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
-            locationSetting, System.currentTimeMillis());
 
-            Cursor cur = getActivity().getContentResolver().query(weatherForLocationUri,null, null, null, sortOrder);
-
-                // The CursorAdapter will take data from our cursor and populate the ListView
-                // However, we cannot use FLAG_AUTO_REQUERY since it is deprecated, so we will end
-                // up with an empty list the first time we run.
-                 mForecastAdapter = new ForecastAdapter(getActivity(), cur, 0);
-
-
-
+        // The CursorAdapter will take data from our cursor and populate the ListView.
+        mForecastAdapter = new ForecastAdapter(getActivity(), null, 0);
         //array adapter ends
 
         //Find listview begins
         ListView myListView=(ListView) rootView.findViewById(R.id.listview_forecast);
 
         ///setting adapter
-        myListView.setAdapter(myForecastAdapter);
+        myListView.setAdapter(mForecastAdapter);
 
         //Find listview ends
 
@@ -108,9 +94,42 @@ public class ForecastFragment extends Fragment
         // so that they can be closed in the finally block.
         return rootView;
     }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+         getLoaderManager().initLoader(FORECAST_LOADER, null, this);
+         super.onActivityCreated(savedInstanceState);
+    }
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+    String locationSetting = Utility.getPreferredLocation(getActivity());
+
+            // Sort order:  Ascending, by date.
+            String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+    Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+            locationSetting, System.currentTimeMillis());
+
+            return new CursorLoader(getActivity(),
+            weatherForLocationUri,
+            null,
+            null,
+            null,
+            sortOrder);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+    mForecastAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> cursorLoader) {
+    mForecastAdapter.swapCursor(null);
+    }
+
     private void updateWeather()
     {
-        FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
         String location = Utility.getPreferredLocation(getActivity());
         weatherTask.execute(location);
     }
@@ -185,8 +204,8 @@ public class ForecastFragment extends Fragment
             String[] resultStrs = new String[numDays];
 
             //Convert Between fahrenheit and celcius
-            SharedPreferences sharedpref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String unitType = sharedpref.getString(getString(R.string.pref_units_key),getString(R.string.pref_units_metric));
+
+
 
             for(int i = 0; i < weatherArray.length(); i++) {
                 // For now, using the format "Day, description, hi/low"
@@ -215,8 +234,7 @@ public class ForecastFragment extends Fragment
                 double high = temperatureObject.getDouble(OWM_MAX);
                 double low = temperatureObject.getDouble(OWM_MIN);
 
-                highAndLow = formatHighLows(high, low, unitType);
-                resultStrs[i] = day + " - " + description + " - " + highAndLow;
+
             }
 
             for (String s : resultStrs) {
@@ -337,31 +355,12 @@ public class ForecastFragment extends Fragment
                 }
             }
 
-            try
-            {
-                return getWeatherDataFromJson(forecastJsonStr,numDays);
-            }
-            catch(JSONException e)
-            {
-                Log.e("newbie_error",e.getMessage(),e);
-                e.printStackTrace();
-            }
+
 
             return null;
         }
 
-        @Override
-        protected void onPostExecute(String[] result)
-        {
-            if(result!=null)
-            {
-                myForecastAdapter.clear();
-                for(String forecastDay:result)
-                {
-                    myForecastAdapter.addAll(forecastDay);
-                }
-            }
-        }
+
 
 
 
